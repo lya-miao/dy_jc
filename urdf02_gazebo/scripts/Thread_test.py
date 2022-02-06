@@ -7,9 +7,12 @@ import rospy
 from sensor_msgs.msg import LaserScan
 import ros_numpy
 import numpy as np
-
+import math
 import threading
 import time
+import cmath
+from std_msgs.msg import Float32MultiArray
+from std_msgs.msg import Float32
 
 
 
@@ -31,7 +34,7 @@ scope_d = 0.1
 
 S=np.zeros(360)
 
-
+D_test=[[1.11,2.22],[3.33]]
 
 
 
@@ -122,13 +125,12 @@ def update_D(delay):
 
 
 
-
-            
-
-
-      
-
-
+def array_pub(array,top):
+    topic="/"+top
+    arr_D=array
+    pub=rospy.Publisher(topic,Float32MultiArray,queue_size=100)
+    arr=Float32MultiArray(data=arr_D)
+    pub.publish(arr)
 
 
 def publish_point(M,name):
@@ -154,10 +156,13 @@ def Publisher(delay):
     while not rospy.is_shutdown():
         time.sleep(delay)
         publish_point(S,"static")
-        SS=np.round(S,3)
-        rospy.loginfo(SS)
+        # SS=np.round(S,3)
+        # rospy.loginfo(SS)
        
-        # publish_point(D,"dynamic_point")
+        publish_point(D,"dynamic_point")
+        array_pub(D1_1list,"D1")
+        rospy.loginfo(D1_1list)
+
         # publish_point(C1_Map,"dynamic_1")
         # publish_point(C2_Map,"dynamic_2")
 
@@ -200,13 +205,14 @@ def update_Map(delay):
 
 
 D1=[]
-
+D1_1list=[]
 
 
 
 def update_D1(delay):
     # global K 
     global D1 
+    global D1_1list
     while not rospy.is_shutdown():
         time.sleep(delay)
         D11=[]          
@@ -214,9 +220,15 @@ def update_D1(delay):
         for i in range(len(D)-1):
             if (D[i]-D[i-1]) > 0.3:
                 D11.append([i,D[i]])
-        D1=D11
-        
-        # rospy.loginfo(D1)
+
+        if len(D11)==0:
+            D1=[0,0]
+            D1_1list=D1
+
+        else:
+            D1=D11
+            D1_1list=list(np.array(D1).flatten())
+
 
    
 
@@ -312,6 +324,30 @@ def extend_as_C_Map(c):
     return C_Map
 
 
+
+
+
+C1_T_2D=[]
+C1_T_v_record=[]
+C1_T_ang_record=[]
+
+def C_caculate_distance_C_record(C):
+
+
+        C1_T_v_record.append
+
+
+def coordinate_transition_2D(P):
+    x=P[1]*math.cos(math.radians(P[0]))
+    y=P[1]*math.sin(math.radians(P[0]))
+    return [x,y]
+
+
+
+def coordinate_transition_p(Q):    
+    p=list(cmath. polar(Q))
+
+
 # def init_C(num):
 #     global D1
 #     c=[]
@@ -356,19 +392,6 @@ def extend_as_C_Map(c):
 
 
 
-                        
-        
-
-
-            
-
-
-
-            
-
-
-
-
        
 T_update_Map = Thread_update_Map(1,0.1)
 T_update_G_S = Thread_update_G_S(2,0.5)
@@ -378,12 +401,17 @@ T_update_D1= Thread_update_D1(5,0.1)
 T_update_C= Thread_update_C(5,0.2)
 
 
+
+
+
+
+
 if __name__ == '__main__':
     rospy.init_node('get_laser')
     T_update_Map.start()
     T_update_G_S.start()
-    # T_update_D.start()
-    # T_update_D1.start()
+    T_update_D.start()
+    T_update_D1.start()
     # T_update_C.start()
     T_Pub.start()
 

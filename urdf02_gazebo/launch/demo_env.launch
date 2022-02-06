@@ -39,7 +39,7 @@
 
 
        <param name="robot_description" command="$(find xacro)/xacro $(find urdf02_gazebo)/urdf/car.urdf_copy.xacro ns:=robot2" />
-       <node pkg="gazebo_ros" type="spawn_model" name="robot2" args="-urdf -model robot2 -z 0.0 -x 2.0 -y -1.0 -param robot_description" />
+       <node pkg="gazebo_ros" type="spawn_model" name="robot2" args="-urdf -model robot2 -z 0.0 -x -3.0 -y -3.0 -param robot_description" />
        
         <node pkg="teleop_twist_keyboard" type="teleop_twist_keyboard.py" name="teleop_twist_keyboard" />
      </group>
@@ -55,7 +55,7 @@
 
 
        <param name="robot_description" command="$(find xacro)/xacro $(find urdf02_gazebo)/urdf/car.urdf_copy.xacro ns:=robot3" />
-       <node pkg="gazebo_ros" type="spawn_model" name="robot3" args="-urdf -model robot3 -z 0.0 -x -2.0 -y -3.0 -param robot_description" />
+       <node pkg="gazebo_ros" type="spawn_model" name="robot3" args="-urdf -model robot3 -z 0.0 -x 2.0 -y -1.0 -param robot_description" />
        
         <node pkg="teleop_twist_keyboard" type="teleop_twist_keyboard.py" name="teleop_twist_keyboard" />
      </group>
